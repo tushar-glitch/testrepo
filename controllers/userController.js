@@ -41,7 +41,7 @@ class userController {
             }
             else {
                 const expiresAt = otprecords[0].expiresAt
-                const otp = otprecords[0].otp
+                const otp = otprecords[otprecords.length-1].otp
                 console.log(user_otp);
                 console.log(otp);
                 if (expiresAt < Date.now()) {
