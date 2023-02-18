@@ -42,6 +42,8 @@ class userController {
             else {
                 const expiresAt = otprecords[0].expiresAt
                 const otp = otprecords[0].otp
+                console.log(user_otp);
+                console.log(otp);
                 if (expiresAt < Date.now()) {
                     res.status(403).json({
                         message:"Otp has expired!"
