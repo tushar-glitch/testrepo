@@ -36,6 +36,14 @@ const auth_schema = new mongoose.Schema({
     section: {
         type: String,
         required:true
+    },
+    password: {
+        type: String,
+        required:true
+    },
+    confirm_password: {
+        type: String,
+        required:true
     }
 })
 const auth_Model = mongoose.model('users', auth_schema)
