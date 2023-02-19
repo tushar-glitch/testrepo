@@ -3,10 +3,10 @@ const mongoose = require('mongoose')
 const auth_schema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: true 
     },
-    age: {
-        type: Number,
+    dob: {
+        type: Date,
         required: true
     },
     email: {
@@ -27,6 +27,10 @@ const auth_schema = new mongoose.Schema({
     },
     branch: {
         type: String,
+        required:true
+    },
+    contact_no: {
+        type: Number,
         required:true
     },
     section: {

@@ -71,19 +71,20 @@ class userController {
     }
 
     static userRegistration = async (req, res) => {
-        const { name, age, email, university_roll, student_no, is_hosteler, branch, section } = req.body
-        if (name, age, email, university_roll, student_no, is_hosteler, branch, section) {
+        const { name, dob, email, university_roll, student_no, is_hosteler, branch, section,contact_no } = req.body
+        if (name, dob, email, university_roll, student_no, is_hosteler, branch, section) {
             const isemail = await auth_Model.findOne({ email: email })
             if (!isemail) {
                 const new_user = auth_Model({
                     name: name,
-                    age: age,
+                    dob: new Date(dob),
                     email: email,
                     university_roll: university_roll,
                     student_no: student_no,
                     is_hosteler: is_hosteler,
                     branch: branch,
-                    section: section
+                    section: section,
+                    contact_no:contact_no
                 })
                 userController.sendotp(email,res)
                 const save_user = await new_user.save()
