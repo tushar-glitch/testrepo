@@ -40,10 +40,6 @@ const auth_schema = new mongoose.Schema({
     password: {
         type: String,
         required:true
-    },
-    confirm_password: {
-        type: String,
-        required:true
     }
 })
 const auth_Model = mongoose.model('users', auth_schema)

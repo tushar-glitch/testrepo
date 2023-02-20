@@ -1,5 +1,6 @@
 const auth_Model = require("../models/userModel")
 const otp_model = require("../models/otpmodel")
+const bcrypt = require("bcryptjs")
 const nodemailer = require('nodemailer')
 class userController {
     static sendotp = async (email,res) => {
@@ -71,10 +72,11 @@ class userController {
     }
 
     static userRegistration = async (req, res) => {
-        const { name, dob, email, university_roll, student_no, is_hosteler, branch, section,contact_no,password, confirm_password } = req.body
-        if (name, dob, email, university_roll, student_no, is_hosteler, branch, section, password, confirm_password) {
+        const { name, dob, email, university_roll, student_no, is_hosteler, branch, section,contact_no,password } = req.body
+        if (name, dob, email, university_roll, student_no, is_hosteler, branch, section, password) {
             const isemail = await auth_Model.findOne({ email: email })
             if (!isemail) {
+                const newpass = await bcrypt.hash(password, 10)
                 const new_user = auth_Model({
                     name: name,
                     dob: new Date(dob),
@@ -85,8 +87,7 @@ class userController {
                     branch: branch,
                     section: section,
                     contact_no: contact_no,
-                    password:password,
-                    confirm_password:confirm_password
+                    password:newpass
                 })
                 userController.sendotp(email,res)
                 const save_user = await new_user.save()
@@ -105,6 +106,35 @@ class userController {
                 "message": "Please enter all the fields"
             })
             console.log('Field empty');
+        }
+    }
+    static userLogin = async (req, res) => {
+        const { email, password } = req.body
+        if (email && password) {
+            const isuser = await auth_Model.findOne({ email: email })
+            if (!isuser) {
+                res.status(403).json({
+                    "message": "Email not found"
+                })
+            }
+            else {
+                const ispasscorrect = await bcrypt.compare(password, isuser.password)
+                if (!ispasscorrect) {
+                    res.status(403).json({
+                        "message": "Incorrect password"
+                    })
+                }
+                else {   
+                    res.status(200).json({
+                        message:"Login successfull"
+                    })
+                }
+            }
+        }
+        else {
+            res.status(403).json({
+                "message": "Please enter all the fields"
+            })
         }
     }
 }
