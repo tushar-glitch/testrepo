@@ -3,29 +3,40 @@ const otp_model = require("../models/otpmodel")
 const bcrypt = require("bcryptjs")
 const nodemailer = require('nodemailer')
 class userController {
-    static sendotp = async (email,res) => {
-        const otp = Math.floor(((Math.random()*9000)+1000)) 
-        const transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-                user: "tusharc20001@gmail.com",
-                pass: "udfmjqntdpovoaoi",
-            },
-        });
-        const mailoptions = {
-            from: "tusharc20001@gmail.com",
-            to: email,
-            subject: "Verify your email",
-            html : `Your otp for verification is <b>${otp}</b>. This code will expire in an <b>1 hour</b>`
+    static sendotp = async (req, res) => {
+        const { email } = req.body
+        if (email) {
+            const otp = Math.floor(((Math.random() * 9000) + 1000))
+            const transporter = nodemailer.createTransport({
+                service: "gmail",
+                auth: {
+                    user: "tusharc20001@gmail.com",
+                    pass: "udfmjqntdpovoaoi",
+                },
+            });
+            const mailoptions = {
+                from: "tusharc20001@gmail.com",
+                to: email,
+                subject: "Verify your email",
+                html: `Your otp for verification is <b>${otp}</b>. This code will expire in an <b>1 hour</b>`
+            }
+            const newOtpVerfication = await new otp_model({
+                email: email,
+                otp: otp,
+                createdAt: Date.now(),
+                expiresAt: Date.now() + 3600000
+            })
+            res.status(200).json({
+                message:"Otp sent successfully"
+            })
+            await newOtpVerfication.save()
+            await transporter.sendMail(mailoptions)
         }
-        const newOtpVerfication = await new otp_model({
-            email: email,
-            otp: otp,
-            createdAt: Date.now(),
-            expiresAt: Date.now() + 3600000 
-        })
-        await newOtpVerfication.save()
-        await transporter.sendMail(mailoptions)
+        else {
+            res.status(400).json({
+                message:"Email is required"
+            })
+        }
     }
     
     static verifyotp = async (req, res) => {
@@ -89,7 +100,7 @@ class userController {
                     contact_no: contact_no,
                     password:newpass
                 })
-                userController.sendotp(email,res)
+                // userController.sendotp(email,res)
                 const save_user = await new_user.save()
                 res.status(200).json({
                     message:"Otp has been sent successfully to your email!"
